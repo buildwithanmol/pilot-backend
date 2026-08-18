@@ -1,0 +1,1 @@
+ALTER TABLE "channel_records" ADD CONSTRAINT "channel_records_link_key" UNIQUE("link");

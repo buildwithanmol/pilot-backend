@@ -1,0 +1,1 @@
+ALTER TABLE "employee_folders" RENAME COLUMN "folder_url" TO "folder_name";
