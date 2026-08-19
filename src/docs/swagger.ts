@@ -66,7 +66,7 @@ export const swaggerSpec = {
     },
   ],
   paths: {
-    "/api/v1/auth/login": {
+    "/auth/login": {
       post: {
         tags: ["Authentication"],
         summary: "Employee login (issues JWT valid for 24h with sub and role)",
@@ -95,7 +95,7 @@ export const swaggerSpec = {
         },
       },
     },
-    "/api/v1/auth/me": {
+    "/auth/me": {
       get: {
         tags: ["Authentication"],
         summary: "Get current authenticated employee profile from JWT",
