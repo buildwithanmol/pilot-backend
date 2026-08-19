@@ -3,6 +3,7 @@ import { eq, count, and, desc, inArray } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { channels, channelRecords, employees, projects } from "../db/schema.js";
 import { getSelectedColumns } from "../utils/query.js";
+import { authenticate, smmCreateLinksGuard } from "../middlewares/auth.js";
 
 const router = Router();
 
@@ -109,7 +110,7 @@ async function createLinks(req: Request, res: Response) {
     const today = new Date().toISOString().split("T")[0];
 
     for (const item of items) {
-      const eId = item.eId || item.employeeId;
+      const eId = item.eId || item.employeeId || req.user?.sub;
       const cId = item.cId || item.channelId;
       const pId = item.pId || item.projectId;
       const link = item.link || item.url;
@@ -572,7 +573,7 @@ async function deleteChannel(req: Request, res: Response) {
 router.get("/links/all", getAllLinks);
 router.get("/links/:id", getLinkById);
 router.get("/links", getAllLinks);
-router.post("/links", createLinks);
+router.post("/links", smmCreateLinksGuard, createLinks);
 router.put("/links/:id", updateLinkById);
 router.put("/links", updateLinks);
 router.delete("/links/:id", deleteLinkById);

@@ -13,6 +13,10 @@ export const swaggerSpec = {
   ],
   tags: [
     {
+      name: "Authentication",
+      description: "Employee login and session endpoints (JWT token with sub, role, and 24h exp)",
+    },
+    {
       name: "Employees",
       description: "Employee management and folder association endpoints",
     },
@@ -62,6 +66,54 @@ export const swaggerSpec = {
     },
   ],
   paths: {
+    "/api/v1/auth/login": {
+      post: {
+        tags: ["Authentication"],
+        summary: "Employee login (issues JWT valid for 24h with sub and role)",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email", "password"],
+                properties: {
+                  email: { type: "string", format: "email", example: "amit.vswkrma@gopulsex.in" },
+                  password: { type: "string", example: "password123" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Login successful with token and employee info",
+          },
+          "401": {
+            description: "Invalid email or password",
+          },
+        },
+      },
+    },
+    "/api/v1/auth/me": {
+      get: {
+        tags: ["Authentication"],
+        summary: "Get current authenticated employee profile from JWT",
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Authenticated employee profile details",
+          },
+          "401": {
+            description: "Unauthorized / missing token",
+          },
+        },
+      },
+    },
     "/api/v1/magic/{e_id}/yt": {
       get: {
         tags: ["Magic Scraping"],
@@ -1123,7 +1175,13 @@ export const swaggerSpec = {
     "/api/v1/channels/links": {
       post: {
         tags: ["Channel Links"],
-        summary: "Create channel record link(s) (Individual or Bulk)",
+        summary: "Create channel record link(s) (SMM scoped to own eId, Admin unscoped)",
+        description: "Requires JWT Bearer authentication. SMM employees can only create links matching their own employee ID. Admins can create links for any employee.",
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
         requestBody: {
           required: true,
           content: {
@@ -1947,6 +2005,16 @@ export const swaggerSpec = {
             description: "Settings record not found",
           },
         },
+      },
+    },
+  },
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        description: "Enter your JWT Bearer token in the format: Bearer <token>",
       },
     },
   },

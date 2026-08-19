@@ -4,7 +4,9 @@ import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 import apiV1Router from "./routes/index.js";
 import magicRouter from "./routes/magic.js";
+import authRouter from "./routes/auth.js";
 import { swaggerSpec } from "./docs/swagger.js";
+import { authenticate } from "./middlewares/auth.js";
 
 dotenv.config();
 
@@ -42,7 +44,8 @@ app.get("/docs.json", (_req: Request, res: Response) => {
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/api/v1", apiV1Router);
+app.use("/api/v1", authenticate, apiV1Router);
+app.use("/auth", authRouter);
 app.use("/magic", magicRouter);
 
 app.use((_req: Request, res: Response) => {
